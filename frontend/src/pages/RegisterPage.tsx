@@ -44,7 +44,7 @@ export function RegisterPage() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-950/40 via-black to-black" />
 
       <Link to="/" className="absolute left-6 top-6 text-2xl font-black text-red-600 sm:left-10 sm:top-8">
-        VOXTER
+        VOXTERFLIX
       </Link>
 
       <div className="relative w-full max-w-sm rounded-md bg-black/75 p-8 shadow-2xl sm:p-10">

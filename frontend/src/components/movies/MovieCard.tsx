@@ -57,9 +57,9 @@ export function MovieCard({ movie, className, onRemove }: MovieCardProps) {
         </button>
       )}
 
-      <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/95 to-transparent p-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <p className="line-clamp-2 text-xs font-medium text-white">{movie.Title}</p>
-        <p className="text-[11px] text-neutral-400">{movie.Year}</p>
+      <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black via-black/85 to-transparent p-3 pt-8 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <p className="line-clamp-2 text-sm font-bold text-white drop-shadow-sm">{movie.Title}</p>
+        <p className="mt-0.5 text-xs font-semibold text-neutral-300">{movie.Year}</p>
       </div>
     </Link>
   );

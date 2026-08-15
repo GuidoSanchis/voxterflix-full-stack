@@ -1,4 +1,4 @@
-# Voxter Movie Catalog
+# Voxterflix
 
 Catálogo de filmes e séries inspirado na Netflix, desenvolvido como teste técnico para o processo seletivo da Voxter. A aplicação consome dados reais de filmes/séries da [OMDb API](https://www.omdbapi.com) e conta com autenticação própria, catálogo com carrosséis por categoria, busca, tela de detalhes e uma lista de favoritos ("Minha Lista") vinculada ao usuário logado.
 

@@ -37,7 +37,7 @@ async function bootstrap() {
   );
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Voxter Movie Catalog API')
+    .setTitle('Voxterflix API')
     .setDescription(
       'API do catálogo de filmes/séries inspirado na Netflix, consumindo a OMDb API',
     )

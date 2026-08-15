@@ -1,4 +1,4 @@
-# Voxter Movie Catalog — Backend
+# Voxterflix — Backend
 
 API em NestJS + Prisma + PostgreSQL. Instruções completas de instalação, execução e variáveis de ambiente estão no [README da raiz do projeto](../README.md).
 

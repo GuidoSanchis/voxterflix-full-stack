@@ -15,8 +15,8 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Voxter Movie Catalog API"', () => {
-      expect(appController.getHello()).toBe('Voxter Movie Catalog API');
+    it('should return "Voxterflix API"', () => {
+      expect(appController.getHello()).toBe('Voxterflix API');
     });
   });
 });

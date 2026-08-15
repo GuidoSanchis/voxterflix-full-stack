@@ -82,7 +82,7 @@ export function MovieRow({ title, items, ranked = false }: MovieRowProps) {
                 <div key={movie.imdbID} className="flex shrink-0 items-end">
                   <span
                     aria-hidden="true"
-                    className="-mr-4 pb-1 text-[5.5rem] leading-none font-black text-transparent select-none [-webkit-text-stroke:3px_rgba(163,163,163,0.7)] sm:-mr-6 sm:text-[7.5rem]"
+                    className="-mr-2 pb-1 text-[7.5rem] leading-none font-black text-transparent select-none [-webkit-text-stroke:4px_rgba(163,163,163,0.7)] sm:-mr-3 sm:text-[10rem]"
                   >
                     {index + 1}
                   </span>

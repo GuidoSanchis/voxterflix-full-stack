@@ -46,7 +46,7 @@ export function Navbar() {
             onClick={() => setMobileMenuOpen(false)}
             className="text-3xl font-black tracking-tight text-red-600 drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]"
           >
-            VOXTER
+            VOXTERFLIX
           </Link>
           <nav className="hidden gap-2 sm:flex">
             {NAV_LINKS.map(({ to, label, icon: Icon }) => {
