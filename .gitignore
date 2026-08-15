@@ -6,3 +6,6 @@ build/
 *.log
 .DS_Store
 
+# Material do desafio, não faz parte da entrega
+docs/
+

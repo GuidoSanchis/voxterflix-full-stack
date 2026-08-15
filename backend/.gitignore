@@ -1,0 +1,8 @@
+node_modules
+# Keep environment variables out of version control
+.env
+
+/generated/prisma
+
+# Dangling symlinks auto-installed by `prisma init` (AI agent skill docs, unrelated to this project)
+.claude/
