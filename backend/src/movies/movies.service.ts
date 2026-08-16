@@ -71,6 +71,21 @@ function upgradeItemPoster<T extends Record<string, unknown>>(
   return { ...item, Poster: upgradePosterUrl(item.Poster, width) };
 }
 
+// A OMDb usa Response: 'False' tanto para "não encontrado" quanto para falhas
+// da própria integração (chave inválida, cota estourada) — sem isso, uma
+// chave expirada chegava ao cliente como 404 em vez de 502.
+const OMDB_NOT_FOUND_PATTERN = /not found|incorrect imdb id/i;
+
+function throwForOmdbError(
+  error: string | undefined,
+  notFoundFallback: string,
+): never {
+  if (error && !OMDB_NOT_FOUND_PATTERN.test(error)) {
+    throw new BadGatewayException(`A OMDb API recusou a requisição: ${error}`);
+  }
+  throw new NotFoundException(error ?? notFoundFallback);
+}
+
 @Injectable()
 export class MoviesService {
   private readonly logger = new Logger(MoviesService.name);
@@ -92,7 +107,7 @@ export class MoviesService {
   async search(query: string, page = '1'): Promise<OmdbSearchResponse> {
     const data = await this.omdbGet<OmdbSearchResponse>({ s: query, page });
     if (data.Response === 'False') {
-      throw new NotFoundException(data.Error ?? 'Nenhum título encontrado');
+      throwForOmdbError(data.Error, 'Nenhum título encontrado');
     }
     const items = shuffle(data.Search ?? []).map((item) =>
       upgradeItemPoster(item, 500),
@@ -106,7 +121,7 @@ export class MoviesService {
       plot: 'full',
     });
     if (data.Response === 'False') {
-      throw new NotFoundException(data.Error ?? 'Título não encontrado');
+      throwForOmdbError(data.Error, 'Título não encontrado');
     }
     return { ...data, Poster: upgradePosterUrl(data.Poster, 1000) };
   }
