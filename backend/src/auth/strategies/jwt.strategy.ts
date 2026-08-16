@@ -21,7 +21,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: extractFromCookie,
       ignoreExpiration: false,
-      secretOrKey: config.get<string>('JWT_SECRET') ?? 'dev-secret-change-me',
+      // JWT_SECRET é validado como obrigatório no boot (ver config/env.validation.ts),
+      // então nunca chega undefined aqui — sem fallback para não divergir do
+      // assinante em auth.module.ts, que também não tem fallback.
+      secretOrKey: config.get<string>('JWT_SECRET')!,
     });
   }
 

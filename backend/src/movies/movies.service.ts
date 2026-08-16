@@ -81,7 +81,8 @@ export class MoviesService {
     private readonly http: HttpService,
     private readonly config: ConfigService,
   ) {
-    this.apiKey = this.config.get<string>('OMDB_API_KEY') ?? '';
+    // OMDB_API_KEY é validado como obrigatório no boot (ver config/env.validation.ts).
+    this.apiKey = this.config.get<string>('OMDB_API_KEY')!;
     this.baseUrl = this.config.get<string>(
       'OMDB_BASE_URL',
       'https://www.omdbapi.com',
