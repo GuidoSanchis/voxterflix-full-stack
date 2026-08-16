@@ -13,12 +13,16 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    // Espelha o setGlobalPrefix('api') de src/main.ts — sem isso, o teste
+    // batia em GET / (sem prefixo), uma rota que não existe fora do ambiente
+    // de teste, e não exercitava a superfície real da API.
+    app.setGlobalPrefix('api');
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('/api (GET)', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/api')
       .expect(200)
       .expect('Voxterflix API');
   });
