@@ -128,7 +128,7 @@ export function SearchBar({ className, inputClassName, onNavigate }: SearchBarPr
                   index === highlightedIndex ? 'bg-white/10' : 'hover:bg-white/5',
                 )}
               >
-                {movie.Poster && movie.Poster !== 'N/A' ? (
+                {movie.Poster ? (
                   <img
                     src={movie.Poster}
                     alt=""

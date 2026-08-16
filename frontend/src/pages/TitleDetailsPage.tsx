@@ -15,13 +15,14 @@ import {
   Users,
 } from 'lucide-react';
 import { useMovieDetails } from '../hooks/useMovies';
-import { useAddFavorite, useFavorites, useRemoveFavorite } from '../hooks/useFavorites';
+import { useToggleFavorite } from '../hooks/useFavorites';
 import { useAuth } from '../hooks/useAuth';
 import { Spinner } from '../components/ui/Spinner';
+import { BlurredBackdrop } from '../components/movies/BlurredBackdrop';
 import { cn } from '../lib/cn';
 
 function formatVotes(votes?: string): string | null {
-  if (!votes || votes === 'N/A') return null;
+  if (!votes) return null;
   const n = Number(votes.replace(/,/g, ''));
   if (Number.isNaN(n)) return null;
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M votos`;
@@ -39,9 +40,7 @@ export function TitleDetailsPage() {
   const { imdbId } = useParams<{ imdbId: string }>();
   const { user } = useAuth();
   const { data: movie, isLoading, isError } = useMovieDetails(imdbId);
-  const { data: favorites } = useFavorites();
-  const addFavorite = useAddFavorite();
-  const removeFavorite = useRemoveFavorite();
+  const { isFavorite, toggle } = useToggleFavorite(movie);
   const [imgFailed, setImgFailed] = useState(false);
 
   if (isLoading) {
@@ -63,43 +62,20 @@ export function TitleDetailsPage() {
     );
   }
 
-  const isFavorite = favorites?.some((favorite) => favorite.imdbId === movie.imdbID) ?? false;
-  const hasBackdrop = movie.Poster && movie.Poster !== 'N/A' && !imgFailed;
+  const hasBackdrop = Boolean(movie.Poster) && !imgFailed;
 
   const votes = formatVotes(movie.imdbVotes);
   const rtRating = movie.Ratings?.find((r) => r.Source === 'Rotten Tomatoes')?.Value;
   const metacriticRating = movie.Ratings?.find((r) => r.Source === 'Metacritic')?.Value;
   const metacriticScore = metacriticRating ? Number(metacriticRating.split('/')[0]) : null;
 
-  function handleToggleFavorite() {
-    if (!user || !movie) return;
-    if (isFavorite) {
-      removeFavorite.mutate(movie.imdbID);
-    } else {
-      addFavorite.mutate({
-        imdbId: movie.imdbID,
-        title: movie.Title,
-        poster: movie.Poster !== 'N/A' ? movie.Poster : undefined,
-        year: movie.Year,
-        type: movie.Type,
-      });
-    }
-  }
-
   return (
     <div className="min-h-screen pb-16">
       <div className="relative h-[48vw] max-h-[560px] min-h-[420px] w-full overflow-hidden">
-        {hasBackdrop && (
-          // Mesma técnica do banner da home: o próprio pôster ampliado e borrado
-          // preenche o fundo, com uma cópia nítida e íntegra sobreposta.
-          <img
-            src={movie.Poster}
-            alt=""
-            aria-hidden="true"
-            onError={() => setImgFailed(true)}
-            className="animate-ken-burns absolute inset-0 h-full w-full object-cover object-top blur-3xl brightness-[0.55] saturate-125"
-          />
-        )}
+        <BlurredBackdrop
+          src={hasBackdrop ? movie.Poster : undefined}
+          onError={() => setImgFailed(true)}
+        />
         <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-black/10" />
         <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/10 to-transparent" />
 
@@ -125,7 +101,7 @@ export function TitleDetailsPage() {
             <h1 className="text-3xl font-black drop-shadow-lg sm:text-5xl">{movie.Title}</h1>
 
             <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-neutral-200">
-              {movie.imdbRating && movie.imdbRating !== 'N/A' && (
+              {movie.imdbRating && (
                 <span className="flex items-center gap-1.5 font-semibold text-yellow-400">
                   <Star className="h-4 w-4 fill-current" />
                   {movie.imdbRating}
@@ -134,7 +110,7 @@ export function TitleDetailsPage() {
                   </span>
                 </span>
               )}
-              {rtRating && rtRating !== 'N/A' && (
+              {rtRating && (
                 <span className="flex items-center gap-1.5 font-semibold text-red-500">
                   <Popcorn className="h-4 w-4" />
                   {rtRating}
@@ -158,13 +134,13 @@ export function TitleDetailsPage() {
 
             <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-neutral-200">
               {movie.Year && <span>{movie.Year}</span>}
-              {movie.Rated && movie.Rated !== 'N/A' && (
+              {movie.Rated && (
                 <span className="rounded border border-neutral-400 px-1.5 py-0.5 text-xs">
                   {movie.Rated}
                 </span>
               )}
-              {movie.Runtime && movie.Runtime !== 'N/A' && <span>{movie.Runtime}</span>}
-              {movie.totalSeasons && movie.totalSeasons !== 'N/A' && (
+              {movie.Runtime && <span>{movie.Runtime}</span>}
+              {movie.totalSeasons && (
                 <span className="flex items-center gap-1">
                   <Layers className="h-3.5 w-3.5" />
                   {movie.totalSeasons}{' '}
@@ -173,7 +149,7 @@ export function TitleDetailsPage() {
               )}
             </div>
 
-            {movie.Genre && movie.Genre !== 'N/A' && (
+            {movie.Genre && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {movie.Genre.split(',').map((genre) => (
                   <span
@@ -189,8 +165,8 @@ export function TitleDetailsPage() {
             {user && (
               <button
                 type="button"
-                onClick={handleToggleFavorite}
-                className="group mt-6 flex items-center gap-2 rounded-md bg-neutral-700/70 px-5 py-2 font-semibold text-white transition hover:bg-neutral-700"
+                onClick={toggle}
+                className="group mt-6 flex cursor-pointer items-center gap-2 rounded-md bg-neutral-700/70 px-5 py-2 font-semibold text-white transition hover:bg-neutral-700"
               >
                 <Heart
                   className={cn(
@@ -208,7 +184,7 @@ export function TitleDetailsPage() {
       </div>
 
       <div className="px-4 pt-8 sm:px-8">
-        {movie.Plot && movie.Plot !== 'N/A' && (
+        {movie.Plot && (
           <div className="max-w-2xl">
             <h2 className="text-lg font-semibold text-white">Sinopse</h2>
             <p className="mt-2 leading-relaxed text-neutral-300">{movie.Plot}</p>
@@ -216,25 +192,25 @@ export function TitleDetailsPage() {
         )}
 
         <div className="mt-8 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2">
-          {movie.Actors && movie.Actors !== 'N/A' && (
+          {movie.Actors && (
             <InfoCard icon={Users} label="Elenco" value={movie.Actors} />
           )}
-          {movie.Director && movie.Director !== 'N/A' && (
+          {movie.Director && (
             <InfoCard icon={Clapperboard} label="Direção" value={movie.Director} />
           )}
-          {movie.Writer && movie.Writer !== 'N/A' && (
+          {movie.Writer && (
             <InfoCard icon={PenLine} label="Roteiro" value={movie.Writer} />
           )}
-          {movie.Awards && movie.Awards !== 'N/A' && (
+          {movie.Awards && (
             <InfoCard icon={Award} label="Prêmios" value={movie.Awards} />
           )}
-          {movie.BoxOffice && movie.BoxOffice !== 'N/A' && (
+          {movie.BoxOffice && (
             <InfoCard icon={Banknote} label="Bilheteria" value={movie.BoxOffice} />
           )}
-          {movie.Language && movie.Language !== 'N/A' && (
+          {movie.Language && (
             <InfoCard icon={Languages} label="Idioma" value={movie.Language} />
           )}
-          {movie.Country && movie.Country !== 'N/A' && (
+          {movie.Country && (
             <InfoCard icon={Globe} label="País" value={movie.Country} />
           )}
         </div>

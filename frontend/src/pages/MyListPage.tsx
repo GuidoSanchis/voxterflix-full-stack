@@ -59,7 +59,7 @@ export function MyListPage() {
               movie={{
                 imdbID: favorite.imdbId,
                 Title: favorite.title,
-                Poster: favorite.poster ?? 'N/A',
+                Poster: favorite.poster ?? undefined,
                 Year: favorite.year ?? '',
                 Type: favorite.type ?? 'movie',
               }}

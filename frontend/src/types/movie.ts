@@ -3,7 +3,9 @@ export interface MovieSummary {
   Year: string;
   imdbID: string;
   Type: string;
-  Poster: string;
+  // A OMDb devolve "N/A" quando não há pôster; normalizeOmdbNA() (lib/normalizeOmdb.ts)
+  // já converte isso para undefined na borda da API.
+  Poster?: string;
 }
 
 export interface MovieRating {

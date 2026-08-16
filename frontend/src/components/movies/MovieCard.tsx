@@ -13,7 +13,7 @@ interface MovieCardProps {
 
 export function MovieCard({ movie, className, onRemove }: MovieCardProps) {
   const [imgFailed, setImgFailed] = useState(false);
-  const hasPoster = movie.Poster && movie.Poster !== 'N/A' && !imgFailed;
+  const hasPoster = Boolean(movie.Poster) && !imgFailed;
 
   function handleRemoveClick(event: React.MouseEvent) {
     event.preventDefault();

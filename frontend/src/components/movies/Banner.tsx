@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { Heart, Info } from 'lucide-react';
 import type { MovieDetails, MovieSummary } from '../../types/movie';
-import { useAddFavorite, useFavorites, useRemoveFavorite } from '../../hooks/useFavorites';
+import { useToggleFavorite } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/cn';
+import { BlurredBackdrop } from './BlurredBackdrop';
 
 function isMovieDetails(movie: MovieDetails | MovieSummary): movie is MovieDetails {
   return 'Plot' in movie;
@@ -12,45 +13,18 @@ function isMovieDetails(movie: MovieDetails | MovieSummary): movie is MovieDetai
 
 export function Banner({ movie }: { movie: MovieDetails | MovieSummary }) {
   const { user } = useAuth();
-  const { data: favorites } = useFavorites();
-  const addFavorite = useAddFavorite();
-  const removeFavorite = useRemoveFavorite();
+  const { isFavorite, toggle } = useToggleFavorite(movie);
   const [imgFailed, setImgFailed] = useState(false);
 
-  const hasBackdrop = movie.Poster && movie.Poster !== 'N/A' && !imgFailed;
-  const isFavorite = favorites?.some((favorite) => favorite.imdbId === movie.imdbID) ?? false;
+  const hasBackdrop = Boolean(movie.Poster) && !imgFailed;
   const plot = isMovieDetails(movie) ? movie.Plot : undefined;
-
-  function handleToggleFavorite() {
-    if (!user) return;
-    if (isFavorite) {
-      removeFavorite.mutate(movie.imdbID);
-    } else {
-      addFavorite.mutate({
-        imdbId: movie.imdbID,
-        title: movie.Title,
-        poster: movie.Poster !== 'N/A' ? movie.Poster : undefined,
-        year: movie.Year,
-        type: movie.Type,
-      });
-    }
-  }
 
   return (
     <div className="relative h-[64vw] max-h-[640px] min-h-[460px] w-full overflow-hidden">
-      {hasBackdrop && (
-        // A OMDb só fornece o pôster (retrato) — para preencher um banner largo sem
-        // esticar/cropar de forma feia, usamos a própria imagem ampliada e borrada
-        // como fundo, com o pôster nítido e íntegro sobreposto (técnica popularizada
-        // por apps como o Spotify para capas de álbum).
-        <img
-          src={movie.Poster}
-          alt=""
-          aria-hidden="true"
-          onError={() => setImgFailed(true)}
-          className="animate-ken-burns absolute inset-0 h-full w-full object-cover object-top blur-3xl brightness-[0.55] saturate-125"
-        />
-      )}
+      <BlurredBackdrop
+        src={hasBackdrop ? movie.Poster : undefined}
+        onError={() => setImgFailed(true)}
+      />
       <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-black/10" />
       <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/10 to-transparent" />
 
@@ -82,8 +56,8 @@ export function Banner({ movie }: { movie: MovieDetails | MovieSummary }) {
             {user && (
               <button
                 type="button"
-                onClick={handleToggleFavorite}
-                className="group flex items-center gap-2 rounded-md bg-neutral-700/70 px-5 py-2 font-semibold text-white transition hover:bg-neutral-700"
+                onClick={toggle}
+                className="group flex cursor-pointer items-center gap-2 rounded-md bg-neutral-700/70 px-5 py-2 font-semibold text-white transition hover:bg-neutral-700"
               >
                 <Heart
                   className={cn(
