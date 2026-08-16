@@ -35,6 +35,10 @@ export function MovieRow({ title, items, ranked = false }: MovieRowProps) {
     onSelect();
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
+    return () => {
+      emblaApi.off('select', onSelect);
+      emblaApi.off('reInit', onSelect);
+    };
   }, [emblaApi, onSelect]);
 
   if (items.length === 0) return null;
