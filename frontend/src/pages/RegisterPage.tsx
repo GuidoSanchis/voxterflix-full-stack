@@ -4,7 +4,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { isAxiosError } from 'axios';
+import { AlertCircle, Lock, Mail, User } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { AuthLayout } from '../components/auth/AuthLayout';
+import { AuthTextField } from '../components/auth/AuthTextField';
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Informe seu nome'),
@@ -40,68 +43,56 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-black px-4">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-950/40 via-black to-black" />
-
-      <Link to="/" className="absolute left-6 top-6 text-2xl font-black text-red-600 sm:left-10 sm:top-8">
-        VOXTERFLIX
-      </Link>
-
-      <div className="relative w-full max-w-sm rounded-md bg-black/75 p-8 shadow-2xl sm:p-10">
-        <h1 className="mb-6 text-2xl font-bold text-white">Criar conta</h1>
-
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-          <div>
-            <input
-              {...register('name')}
-              type="text"
-              placeholder="Nome"
-              className="w-full rounded-md border border-white/10 bg-neutral-800 px-4 py-3 text-sm text-white placeholder:text-neutral-400 focus:border-white focus:outline-none"
-            />
-            {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
-          </div>
-
-          <div>
-            <input
-              {...register('email')}
-              type="email"
-              placeholder="E-mail"
-              className="w-full rounded-md border border-white/10 bg-neutral-800 px-4 py-3 text-sm text-white placeholder:text-neutral-400 focus:border-white focus:outline-none"
-            />
-            {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
-          </div>
-
-          <div>
-            <input
-              {...register('password')}
-              type="password"
-              placeholder="Senha"
-              className="w-full rounded-md border border-white/10 bg-neutral-800 px-4 py-3 text-sm text-white placeholder:text-neutral-400 focus:border-white focus:outline-none"
-            />
-            {errors.password && (
-              <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
-            )}
-          </div>
-
-          {formError && <p className="text-sm text-red-500">{formError}</p>}
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full rounded-md bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isSubmitting ? 'Criando conta...' : 'Cadastrar'}
-          </button>
-        </form>
-
+    <AuthLayout
+      title="Criar conta"
+      subtitle="Leva menos de um minuto."
+      footer={
         <p className="mt-6 text-sm text-neutral-400">
           Já tem uma conta?{' '}
-          <Link to="/login" className="text-white hover:underline">
+          <Link to="/login" className="font-medium text-white hover:underline">
             Entrar
           </Link>
           .
         </p>
-      </div>
-    </div>
+      }
+    >
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+        <AuthTextField
+          icon={User}
+          placeholder="Nome"
+          registration={register('name')}
+          error={errors.name?.message}
+        />
+        <AuthTextField
+          icon={Mail}
+          type="email"
+          placeholder="E-mail"
+          registration={register('email')}
+          error={errors.email?.message}
+        />
+        <AuthTextField
+          icon={Lock}
+          revealable
+          placeholder="Senha"
+          registration={register('password')}
+          error={errors.password?.message}
+        />
+
+        {formError && (
+          <p className="flex items-center gap-1.5 rounded-md bg-red-950/50 px-3 py-2 text-sm text-red-400">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            {formError}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full rounded-md bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isSubmitting ? 'Criando conta...' : 'Cadastrar'}
+        </button>
+      </form>
+    </AuthLayout>
   );
 }
