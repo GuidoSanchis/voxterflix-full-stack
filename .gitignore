@@ -9,3 +9,6 @@ build/
 # Material do desafio, não faz parte da entrega
 docs/
 
+# Notas pessoais de auditoria, não faz parte da entrega
+KNOWN_ISSUES.md
+

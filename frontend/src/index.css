@@ -12,6 +12,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+button:not(:disabled),
+[role='button']:not(:disabled) {
+  cursor: pointer;
+}
+
 @keyframes ken-burns {
   from {
     transform: scale(1.1);

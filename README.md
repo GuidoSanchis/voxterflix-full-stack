@@ -135,6 +135,3 @@ Documentação interativa (Swagger) em `http://localhost:3000/api/docs` — como
 - Tela de detalhes (pôster, sinopse, elenco, ano, nota IMDb)
 - "Minha Lista": adicionar/remover favoritos vinculados ao usuário logado
 
-## Limitações conhecidas
-
-Uma auditoria de arquitetura/Clean Code levantou pontos que não são bugs críticos (duplicação de código, ausência de testes no frontend, tratamento de erro incompleto em algumas telas, etc.) — ver [KNOWN_ISSUES.md](./KNOWN_ISSUES.md).

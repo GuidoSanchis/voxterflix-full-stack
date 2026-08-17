@@ -109,7 +109,7 @@ export class MoviesService {
     if (data.Response === 'False') {
       throwForOmdbError(data.Error, 'Nenhum título encontrado');
     }
-    const items = shuffle(data.Search ?? []).map((item) =>
+    const items = (data.Search ?? []).map((item) =>
       upgradeItemPoster(item, 500),
     );
     return { ...data, Search: items };
