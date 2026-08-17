@@ -66,12 +66,9 @@ npm run dev
 
 A aplicação sobe em `http://localhost:5173`.
 
-> **Acesse pelo mesmo host configurado em `VITE_API_URL`.** Com os valores padrão isso
-> significa abrir `http://localhost:5173` (e **não** `http://127.0.0.1:5173`). O navegador
-> trata `localhost` e `127.0.0.1` como hosts diferentes: misturar os dois faz a requisição
-> de login virar cross-site e o cookie de sessão não é gravado — o login parece dar certo,
-> mas você volta para a tela de `/login`. Se preferir usar `127.0.0.1`, use nos dois lados
-> (`VITE_API_URL=http://127.0.0.1:3000/api` e acesse `http://127.0.0.1:5173`).
+> **Acesse pelo mesmo host configurado em `VITE_API_URL`** — por padrão `http://localhost:5173`
+> (não `http://127.0.0.1:5173`). Misturar os dois faz o login "funcionar" mas o cookie de
+> sessão não é salvo, e você volta pra tela de login. Ver [Autenticação](#autenticação).
 
 ## Variáveis de ambiente
 
@@ -100,9 +97,7 @@ As três variáveis obrigatórias são validadas na inicialização (`backend/sr
 
 ## Autenticação
 
-O login/cadastro devolve o token JWT num **cookie httpOnly** (`voxter_token`), não num header `Authorization`. O frontend depende disso (`withCredentials: true` no client Axios).
-
-O CORS é tolerante em dev — `main.ts` libera tanto a variante `localhost` quanto `127.0.0.1` de `FRONTEND_URL`, então o preflight passa nos dois casos. Quem não perdoa é o cookie: `buildAuthCookieOptions()` (`backend/src/auth/auth.constants.ts`) usa `sameSite: 'lax'` e só ativa `secure` em produção. Para o navegador, `localhost` e `127.0.0.1` são hosts diferentes — se o frontend for acessado por um host e `VITE_API_URL` apontar para o outro, a chamada de login vira cross-site e o navegador descarta o `Set-Cookie`. O sintoma é login "bem-sucedido" (200) seguido de um `GET /auth/me` sem sessão, voltando pra tela de login.
+Login/cadastro retornam o token JWT em um cookie httpOnly, não em header `Authorization`. Por isso o frontend precisa ser acessado pelo mesmo host configurado em `VITE_API_URL` (`localhost` e `127.0.0.1` contam como hosts diferentes) — caso contrário o navegador descarta o cookie e o login não persiste.
 
 ## Endpoints
 
