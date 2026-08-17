@@ -66,6 +66,13 @@ npm run dev
 
 A aplicação sobe em `http://localhost:5173`.
 
+> **Acesse pelo mesmo host configurado em `VITE_API_URL`.** Com os valores padrão isso
+> significa abrir `http://localhost:5173` (e **não** `http://127.0.0.1:5173`). O navegador
+> trata `localhost` e `127.0.0.1` como hosts diferentes: misturar os dois faz a requisição
+> de login virar cross-site e o cookie de sessão não é gravado — o login parece dar certo,
+> mas você volta para a tela de `/login`. Se preferir usar `127.0.0.1`, use nos dois lados
+> (`VITE_API_URL=http://127.0.0.1:3000/api` e acesse `http://127.0.0.1:5173`).
+
 ## Variáveis de ambiente
 
 ### `backend/.env`
@@ -89,9 +96,13 @@ As três variáveis obrigatórias são validadas na inicialização (`backend/sr
 |---|---|---|
 | `VITE_API_URL` | URL base da API do backend | `http://localhost:3000/api` |
 
+> O host aqui (`localhost` ou `127.0.0.1`) precisa ser o mesmo que você digita no navegador para acessar o frontend — ver [Autenticação](#autenticação).
+
 ## Autenticação
 
-O login/cadastro devolve o token JWT num **cookie httpOnly** (`voxter_token`), não num header `Authorization`. O frontend depende disso (`withCredentials: true` no client Axios) e é por isso que `FRONTEND_URL`/CORS precisa apontar exatamente para a origem do frontend.
+O login/cadastro devolve o token JWT num **cookie httpOnly** (`voxter_token`), não num header `Authorization`. O frontend depende disso (`withCredentials: true` no client Axios).
+
+O CORS é tolerante em dev — `main.ts` libera tanto a variante `localhost` quanto `127.0.0.1` de `FRONTEND_URL`, então o preflight passa nos dois casos. Quem não perdoa é o cookie: `buildAuthCookieOptions()` (`backend/src/auth/auth.constants.ts`) usa `sameSite: 'lax'` e só ativa `secure` em produção. Para o navegador, `localhost` e `127.0.0.1` são hosts diferentes — se o frontend for acessado por um host e `VITE_API_URL` apontar para o outro, a chamada de login vira cross-site e o navegador descarta o `Set-Cookie`. O sintoma é login "bem-sucedido" (200) seguido de um `GET /auth/me` sem sessão, voltando pra tela de login.
 
 ## Endpoints
 
